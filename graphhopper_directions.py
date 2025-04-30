@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 import requests
 import urllib.parse
+import json
 
 # Load environment variables
 load_dotenv()
@@ -37,3 +38,26 @@ else:
     location = "Washington, DC"
     result = geocode_location(location, GRAPHHOPPER_API_KEY)
     print(result)
+
+
+def save_trip(start, dest, vehicle, data):
+    trip = {
+        "start": start,
+        "dest": dest,
+        "vehicle": vehicle,
+        "distance": data["paths"][0]["distance"] / 1000,  # meters to km
+        "duration": data["paths"][0]["time"] / 3600000  # ms to hours
+    }
+    try:
+        with open("trip_history.json", "r") as f:
+            history = json.load(f)
+    except:
+        history = []
+    history.append(trip)
+    with open("trip_history.json", "w") as f:
+        json.dump(history, f, indent=4)
+def display_route_points(data):
+    points = data["paths"][0]["points"]["coordinates"]
+    print("Route Points (lon, lat):")
+    for i, point in enumerate(points[:5], 1):  # First 5 for brevity
+        print(f"Point {i}: ({point[0]}, {point[1]})")
