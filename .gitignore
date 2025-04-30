@@ -1,5 +1,2 @@
 .env
 trip_history.json
-__pycache__/
-*.pyc
-
